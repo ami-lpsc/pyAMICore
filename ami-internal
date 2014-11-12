@@ -1,0 +1,45 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+from __future__ import (division, print_function, unicode_literals)
+#############################################################################
+# Author  : Jerome ODIER, Jerome FULACHIER, Fabian LAMBERT, Solveig ALBRAND
+#
+# Email   : jerome.odier@lpsc.in2p3.fr
+#           jerome.fulachier@lpsc.in2p3.fr
+#           fabian.lambert@lpsc.in2p3.fr
+#           solveig.albrand@lpsc.in2p3.fr
+#
+# Version : 5.X.X (2014)
+#
+#############################################################################
+
+import os, sys, pyAMI.modes, pyAMI.client, pyAMI.exception
+	
+#############################################################################
+# ENTRY POINT                                                               #
+#############################################################################
+
+def entry_point():
+
+	try:
+		client = pyAMI.client.Client('atlas', 'text', xslt_file = os.path.abspath(os.path.dirname(os.path.realpath(__file__)) + '/custom.xslt'), verbose = False)
+
+		return pyAMI.modes.console(client, {
+			'scriptName': None,
+			'scriptArgs': None,
+			'cIPython': False,
+			'gIPython': True,
+			'nosplash': False,
+		})
+
+	except pyAMI.exception.Error as e:
+		print(e)
+
+		return 1
+
+#############################################################################
+
+if __name__ == '__main__':
+	sys.exit(entry_point())
+
+#############################################################################
