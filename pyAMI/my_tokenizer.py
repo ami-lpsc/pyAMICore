@@ -127,7 +127,9 @@ def _shift(s, group, line):
 
 		result = idx + len(group[1])
 
-		if s[idx - 1] != '\\':
+		if s[idx - 1] != '\\'\
+		   or                \
+		   s[idx - 2] == '\\':
 			break
 
 	return result
