@@ -11,7 +11,8 @@ import pyAMI.exception
 
 #############################################################################
 
-def tokenize(s, spaces = [], symbols = [], strings = [], line = 1):
+def tokenize(s, spaces = [], kwords = [], quotes = [], escape = '\\', line = 1):
+
 	result_tokens = []
 	result_lines = []
 
@@ -44,21 +45,21 @@ def tokenize(s, spaces = [], symbols = [], strings = [], line = 1):
 			continue
 
 		#############################################################
-		# EAT SYMBOLS                                               #
+		# EAT KWORDS                                                #
 		#############################################################
 
 		found = False
 
-		for symbol in symbols:
+		for kword in kwords:
 
-			if s[i: ].startswith(symbol):
+			if s[i: ].startswith(kword):
 
 				if word:
 					result_tokens.append(word)
 					result_lines.append(line)
 					word = ''
 
-				j = i + len(symbol)
+				j = i + len(kword)
 
 				result_tokens.append(s[i: j])
 				result_lines.append(line)
@@ -77,16 +78,16 @@ def tokenize(s, spaces = [], symbols = [], strings = [], line = 1):
 
 		found = False
 
-		for string in strings:
+		for quote in quotes:
 
-			if s[i: ].startswith(string[0]):
+			if s[i: ].startswith(quote):
 
 				if word:
 					result_tokens.append(word)
 					result_lines.append(line)
 					word = ''
 
-				j = i + _shift(s[i: ], string, line)
+				j = i + _shift(s[i: ], quote, escape, line)
 
 				result_tokens.append(s[i: j])
 				result_lines.append(line)
@@ -116,22 +117,30 @@ def tokenize(s, spaces = [], symbols = [], strings = [], line = 1):
 
 #############################################################################
 
-def _shift(s, group, line):
-	result = len(group[0])
+def _shift(s, quote, escape, line):
 
-	while True:
-		idx = s.find(group[1], result)
+	l = len(s)
+	m = len(quote)
+	n = len(escape)
 
-		if idx < 0:
-			raise pyAMI.exception.Error('syntax error, line `%d`, missing token `%s`' % (line, group[1]))
+	i = m
+	cnt = 0
 
-		result = idx + len(group[1])
+	while i < l:
 
-		if s[idx - 1] != '\\'\
-		   or                \
-		   s[idx - 2] == '\\':
-			break
+		if   s[i: ].startswith(quote):
+			i += m
+			if cnt % 2 == 0: return i
+			cnt = 0
+		elif s[i: ].startswith(escape):
+			i += n
+#			if 0x00001 == 0: return i
+			cnt += 1
+		else:
+			i += 1
+#			if 0x00001 == 0: return i
+			cnt = 0
 
-	return result
+	raise pyAMI.exception.Error('syntax error, line `%d`, missing token `%s`' % (line, quote))
 
 #############################################################################

@@ -12,7 +12,7 @@ from __future__ import (division, print_function, unicode_literals)
 #
 #############################################################################
 
-import re, sys, abc, json, xml.dom.minidom, pyAMI.utils, pyAMI.exception
+import abc, json, xml.dom.minidom, pyAMI.utils, pyAMI.exception
 
 #############################################################################
 
@@ -125,8 +125,18 @@ class DOMObject(AMIObject):
 		# CHECK ERRORS                                              #
 		#############################################################
 
-		if raise_errors and self.errors:
-			raise pyAMI.exception.Error('\n'.join([e.firstChild.nodeValue for e in self.errors]))
+		if raise_errors:
+			messages = []
+
+			for error in self.errors:
+
+				try:
+					messages.append(error.firstChild.nodeValue)
+				except:
+					pass
+
+			if messages:
+				raise pyAMI.exception.Error('\n'.join(messages))
 
 	#####################################################################
 
@@ -223,8 +233,18 @@ class DICTObject(AMIObject):
 		# CHECK ERRORS                                              #
 		#############################################################
 
-		if raise_errors and self.errors:
-			raise pyAMI.exception.Error('\n'.join([e['$'] for e in self.errors]))
+		if raise_errors:
+			messages = []
+
+			for error in self.errors:
+
+				try:
+					messages.append(error['$'])
+				except:
+					pass
+
+			if messages:
+				raise pyAMI.exception.Error('\n'.join(messages))
 
 	#####################################################################
 

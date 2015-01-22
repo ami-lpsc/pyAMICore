@@ -344,7 +344,7 @@ def smart_execute_parser(parser, table, include_pattern = True):
 	#####################################################################
 
 	parameters = {}
-	
+
 	for field, descr in tables[table].items():
 		if not field.startswith('@'):
 			parameters[field.replace('_', '-')] = {

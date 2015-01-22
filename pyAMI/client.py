@@ -35,6 +35,18 @@ class Client(object):
 	#####################################################################
 
 	def __init__(self, endpoint, format = 'text', xslt_file = '', key_file = '', cert_file = '', ignore_proxy = False, verbose = False):
+		'''Create a python AMI client.
+
+		Args:
+		    :endpoint: the endpoint [ str ]
+		    :format: the default format [ str ]
+		    :xslt_file: the custom XSL transformation [ str ]
+		    :key_file: the key file for certificate authentication [ str ]
+		    :cert_file: the cert file for certificate authentication [ str ]
+		    :ignore_proxy: igonre VOMS proxy [ bool ]
+		    :verbose: run in verbose mode [ bool ]
+		'''
+
 		super(Client, self).__init__()
 
 		#############################################################
@@ -58,9 +70,28 @@ class Client(object):
 
 		self.verbose = verbose
 
+		#############################################################
+
+		try:
+			__import__('pyAMI_' + endpoint)
+
+		except ImportError:
+			pass
+
 	#####################################################################
 
 	def auth(self, AMIUser = None, AMIPass = None, AMIJSID = ''):
+		'''Set user credentials.
+
+		Args:
+		    :AMIUser: the login [ str ]
+		    :AMIPass: the password [ str ]
+		    :AMIJSID: internal parameter, do not use
+
+		Returns:
+		    nothing.
+		'''
+
 		#############################################################
 		# READ INFO                                                 #
 		#############################################################
@@ -86,12 +117,31 @@ class Client(object):
 	#####################################################################
 
 	def reset(self):
+		'''Reset user credentials.
+
+		Returns:
+		    nothing.
+		'''
+
 		self.config.reset()
 		self.config.write()
 
 	#####################################################################
 
 	def execute(self, command, format = None, AMIUser = None, AMIPass = None, raise_errors = True):
+		'''Execute an AMI command.
+
+		Args:
+		    :command: the command [ list<str> | str ]
+		    :format: the format [ str ]
+		    :AMIUser: override login [ str ]
+		    :AMIPass: override password [ str ]
+		    :raise_errors: raise exception on error [ bool ]
+
+		Returns:
+		    the command result.
+		'''
+
 		#############################################################
 		# GET CONVERTER                                             #
 		#############################################################

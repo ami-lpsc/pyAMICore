@@ -23,7 +23,7 @@ else:
 # GLOBAL DEFINITIONS                                                        #
 #############################################################################
 
-version = '5.0.0'
+version = '5.0.1'
 
 #############################################################################
 
@@ -56,11 +56,7 @@ bug_report = 'Bug reports: ami@lpsc.in2p3.fr'
 #############################################################################
 
 endpoints = {
-	'nedm': {'prot': 'https', 'host': 'lpsc.in2p3.fr', 'port': '443', 'path': '/AMI/nedm/net.hep.atlas.Database.Bookkeeping.AMI.Servlet.FrontEnd'},
-	'atlas': {'prot': 'https', 'host': 'ami.in2p3.fr', 'port': '443', 'path': '/AMI/servlet/net.hep.atlas.Database.Bookkeeping.AMI.Servlet.FrontEnd'},
-	'atlas-replica': {'prot': 'https', 'host': 'atlas-ami.cern.ch', 'port': '443', 'path': '/AMI/servlet/net.hep.atlas.Database.Bookkeeping.AMI.Servlet.FrontEnd'},
-	'atlas-dev': {'prot': 'https', 'host': 'ami3test.in2p3.fr', 'port': '8443', 'path': '/AMI/servlet/net.hep.atlas.Database.Bookkeeping.AMI.Servlet.FrontEnd'},
-	'local': {'prot': 'http', 'host': 'localhost', 'port': '8080', 'path': '/AMI/servlet/net.hep.atlas.Database.Bookkeeping.AMI.Servlet.FrontEnd'},
+	'local': {'prot': 'https', 'host': 'localhost', 'port': '8443', 'path': '/AMI/FrontEnd'},
 }
 
 #############################################################################

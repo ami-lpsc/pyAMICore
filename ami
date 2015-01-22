@@ -20,7 +20,7 @@ import sys, pyAMI.app
 #############################################################################
 
 def entry_point():
-	return pyAMI.app.App('atlas', 'text').run()
+	return pyAMI.app.App('local', 'text').run()
 
 #############################################################################
 

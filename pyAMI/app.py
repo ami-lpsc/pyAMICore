@@ -68,7 +68,7 @@ class App(object):
 
 		parser.add_argument('-f', '--format',
 				dest = 'format', help = 'default format', choices = [pyAMI.utils.safestring(x) for x in pyAMI.config.formats], default = default_format)
-		
+
 		parser.add_argument('-x', '--xslt',
 				dest = 'xslt_file', help = 'custom XSL transformation', default = default_xslt_file)
 
@@ -79,7 +79,7 @@ class App(object):
 				dest = 'cert_file', help = 'cert file for certificate authentication', default = default_cert_file)
 
 		parser.add_argument('-i', '--ignore-proxy',
-				dest = 'ignore_proxy', help = 'ignore proxy', action = 'store_true', default = False)
+				dest = 'ignore_proxy', help = 'ignore VOMS proxy', action = 'store_true', default = False)
 
 		subparsers = parser.add_subparsers()
 

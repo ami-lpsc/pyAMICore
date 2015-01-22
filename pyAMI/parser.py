@@ -87,9 +87,10 @@ def parse(args):
 
 		TOKENS, _ = pyAMI.my_tokenizer.tokenize(
 			_shell_barrier(arg),
-			  spaces = [' ', '\t', '\n'],
-			    symbols = ['-', '/', '='],
-			      strings = [['\'', '\''], ['\"', '\"']]
+			spaces = [' ', '\t', '\n'],
+			kwords = ['-', '/', '='],
+			quotes = ['\'', '\"'],
+			escape = '\\'
 		)
 
 		tokens.extend(TOKENS)
