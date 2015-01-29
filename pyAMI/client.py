@@ -108,7 +108,7 @@ class Client(object):
 		# LOG-IN                                                    #
 		#############################################################
 
-		for user in self.execute('GetUserInfo -amiLogin=%s' % AMIUser, format = 'dict_object').get_rows_i('User_Info'):
+		for user in self.execute('GetUserInfo -amiLogin="%s"' % AMIUser, format = 'dict_object').get_rows_i('User_Info'):
 
 			pyAMI.utils.safeprint('  First name: %s' % user['firstName'])
 			pyAMI.utils.safeprint('  Last name: %s' % user['lastName'])
@@ -177,6 +177,9 @@ class Client(object):
 
 			AMIPass = decode(AMIPass)
 
+		AMIUser = AMIUser.replace('\\', '\\\\').replace('"', '\\"')
+		AMIPass = AMIPass.replace('\\', '\\\\').replace('"', '\\"')
+
 		#############################################################
 		# BUILD REQUEST                                             #
 		#############################################################
@@ -191,12 +194,12 @@ class Client(object):
 
 		else:
 
-			data['Command'] = '%s -AMIUser=%s -AMIPass=%s' % (command, AMIUser, AMIPass)    \
-			                                                                                \
-				if command                                                              \
-				   and                                                                  \
-				   AMIUser         	                                                \
-				   and                                                                  \
+			data['Command'] = '%s -AMIUser="%s" -AMIPass="%s"' % (command, AMIUser, AMIPass) \
+			                                                                                 \
+				if command                                                               \
+				   and                                                                   \
+				   AMIUser                                                               \
+				   and                                                                   \
 				   AMIPass else command
 
 		#############################################################
