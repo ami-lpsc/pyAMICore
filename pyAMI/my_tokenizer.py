@@ -130,15 +130,15 @@ def _shift(s, quote, escape, line):
 
 		if   s[i: ].startswith(quote):
 			i += m
-			if cnt % 2 == 0: return i
+			if (cnt & 1) == 0: return i
 			cnt = 0
 		elif s[i: ].startswith(escape):
 			i += n
-#			if 0x00001 == 0: return i
+#			if 0x0000001 == 0: return i
 			cnt += 1
 		else:
 			i += 1
-#			if 0x00001 == 0: return i
+#			if 0x0000001 == 0: return i
 			cnt = 0
 
 	raise pyAMI.exception.Error('syntax error, line `%d`, missing token `%s`' % (line, quote))

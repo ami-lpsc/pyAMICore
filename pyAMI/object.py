@@ -93,7 +93,7 @@ class DOMObject(AMIObject):
 			self.data = xml.dom.minidom.parseString(raw_data.encode('utf-8'))
 
 		except Exception:
-			raise pyAMI.exception.Error('internal parsing error, please contact ami@lpsc.in2p3.fr')
+			raise pyAMI.exception.Error('command parsing error, please contact ami@lpsc.in2p3.fr')
 
 		#############################################################
 
@@ -189,7 +189,7 @@ class DICTObject(AMIObject):
 			self.data = json.loads(raw_data)
 
 		except Exception:
-			raise pyAMI.exception.Error('internal parsing error, please contact ami@lpsc.in2p3.fr')
+			raise pyAMI.exception.Error('command parsing error, please contact ami@lpsc.in2p3.fr')
 
 		#############################################################
 

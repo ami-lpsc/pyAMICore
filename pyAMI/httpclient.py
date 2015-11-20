@@ -12,7 +12,7 @@ from __future__ import (division, print_function, unicode_literals)
 #
 #############################################################################
 
-import sys, pyAMI.config, pyAMI.exception
+import ssl, sys, pyAMI.config, pyAMI.exception
 
 if sys.version_info[0] == 3:
 	import http.client as http_client
@@ -76,24 +76,50 @@ class HttpClient(object):
 				# WITHOUT CERTIFICATE                       #
 				#############################################
 
-				self.connection = http_client.HTTPSConnection(
-					str(self.endpoint['host']),
-					int(self.endpoint['port']),
-					key_file = None,
-					cert_file = None
-				)
+				try:
+					context = ssl._create_unverified_context(protocol = ssl.PROTOCOL_TLSv1)
+
+					self.connection = http_client.HTTPSConnection(
+						str(self.endpoint['host']),
+						int(self.endpoint['port']),
+						key_file = None,
+						cert_file = None,
+						context = context
+					)
+
+				except AttributeError as e:
+
+					self.connection = http_client.HTTPSConnection(
+						str(self.endpoint['host']),
+						int(self.endpoint['port']),
+						key_file = None,
+						cert_file = None
+					)
 
 			else:
 				#############################################
 				# WITH CERTIFICATE                          #
 				#############################################
 
-				self.connection = http_client.HTTPSConnection(
-					str(self.endpoint['host']),
-					int(self.endpoint['port']),
-					key_file = self.config.key_file,
-					cert_file = self.config.cert_file
-				)
+				try:
+					context = ssl._create_unverified_context(protocol = ssl.PROTOCOL_TLSv1)
+
+					self.connection = http_client.HTTPSConnection(
+						str(self.endpoint['host']),
+						int(self.endpoint['port']),
+						key_file = self.config.key_file,
+						cert_file = self.config.cert_file,
+						context = context
+					)
+
+				except AttributeError as e:
+
+					self.connection = http_client.HTTPSConnection(
+						str(self.endpoint['host']),
+						int(self.endpoint['port']),
+						key_file = self.config.key_file,
+						cert_file = self.config.cert_file
+					)
 
 		#############################################################
 
