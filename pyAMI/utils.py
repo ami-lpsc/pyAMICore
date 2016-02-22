@@ -99,7 +99,7 @@ def _resolve_field(table, field):
 	#####################################################################
 
 	try:
-		fields = tables[table]
+		resolved_fields = tables[table]
 
 	except KeyError:
 		raise pyAMI.exception.Error('invalid table `%s`, not in [%s]' % (
@@ -112,7 +112,8 @@ def _resolve_field(table, field):
 	#####################################################################
 
 	try:
-		result = fields[field]
+		resolved_table = resolved_fields['@entity']
+		resolved_field = resolved_fields[  field  ]
 
 	except KeyError:
 		raise pyAMI.exception.Error('invalid field `%s`, not in [%s]' % (
@@ -121,15 +122,15 @@ def _resolve_field(table, field):
 		))
 
 	#####################################################################
-	# EXTRACT FIELD NAME                                                #
+	# RETURN RESULT                                                     #
 	#####################################################################
 
-	if not field.startswith('@'):
-		result = result.split('=')[0]
+	if field.startswith('@'):
+		return resolved_field
+	else:
+		resolved_field = resolved_field.split('=')[0]
 
-	#####################################################################
-
-	return result
+		return '%s.%s' % (resolved_table, resolved_field)
 
 #############################################################################
 
@@ -156,14 +157,7 @@ def resolve_field(table, field):
 	# RESOLVE ENTITY AND FIELD                                          #
 	#####################################################################
 
-	name = _resolve_field(new_table, new_field)
-
-	#####################################################################
-
-	if table != new_table:
-		return '%s.%s' % (new_table, name)
-	else:
-		return '%s' % (name)
+	return _resolve_field(new_table, new_field)
 
 #############################################################################
 
@@ -353,9 +347,10 @@ def smart_execute_parser(parser, table, include_pattern = True):
 	for field, descr in tables[table].items():
 		if not field.startswith('@'):
 			PARAMETERS[field] = {
+				'field': field,
+				'option': field.replace('_', '-'),
 				'foreign': False,
 				'descr': [x.strip() for x in descr.split('=')],
-				'option': field.replace('_', '-'),
 			}
 
 	for TABLE in get_foreign_tables(table):
@@ -363,9 +358,10 @@ def smart_execute_parser(parser, table, include_pattern = True):
 		for field, descr in tables[TABLE].items():
 			if not field.startswith('@'):
 				PARAMETERS[TABLE + '.' + field] = {
+					'field': TABLE + '.' + field,
+					'option': TABLE + '.' + field.replace('_', '-'),
 					'foreign': True,
 					'descr': [x.strip() for x in descr.split('=')],
-					'option': TABLE + '.' + field.replace('_', '-'),
 				}
 
 	#####################################################################
@@ -386,7 +382,7 @@ def smart_execute_parser(parser, table, include_pattern = True):
 	# ENTITY PARAMETERS                                                 #
 	#####################################################################
 
-	for field, data in sorted(PARAMETERS.items()):
+	for _, data in sorted(PARAMETERS.items()):
 		#############################################################
 		# OPTION NAME                                               #
 		#############################################################
