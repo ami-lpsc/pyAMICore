@@ -212,15 +212,18 @@ def smart_execute(client, table, patterns = None, fields = None, order = None, l
 	PROCESSING_STEP = get_processing_step(table)
 
 	#####################################################################
-	# GET PRIMARY AND EXTRA FIELDS                                      #
+	# GET PRIMARY AND ADDITIONAL FIELDS                                 #
 	#####################################################################
 
-	primary_and_extra_fields = []
+	primary_fields = get_primary_fields(table)
+	additional_fields = to_array(fields, sep = ',')
 
-	for field in get_primary_fields(table) + to_array(fields, sep = ','):
+	primary_and_additional_fields = []
 
-		if not field in primary_and_extra_fields:
-			primary_and_extra_fields.append(field)
+	for field in primary_fields + additional_fields:
+
+		if not field in primary_and_additional_fields:
+			primary_and_additional_fields.append(field)
 
 	#####################################################################
 	# FIELD PART                                                        #
@@ -228,7 +231,7 @@ def smart_execute(client, table, patterns = None, fields = None, order = None, l
 
 	tmp = []
 
-	for field in primary_and_extra_fields:
+	for field in primary_and_additional_fields:
 
 		resolved_field = resolve_field(table, field)
 
@@ -242,14 +245,16 @@ def smart_execute(client, table, patterns = None, fields = None, order = None, l
 
 	tmp = []
 
-	for pattern in to_array(patterns, sep = ','):
+	for primary_field in primary_fields:
 
-		resolved_field = resolve_field(table, primary_and_extra_fields[0])
+		for pattern in to_array(patterns, sep = ','):
 
-		if pattern.count('%') > 0:
-			tmp.append('%s like \'%s\'' % (resolved_field, pattern))
-		else:
-			tmp.append('%s = \'%s\'' % (resolved_field, pattern))
+			resolved_field = resolve_field(table, primary_field)
+
+			if pattern.count('%') > 0:
+				tmp.append('%s like \'%s\'' % (resolved_field, pattern))
+			else:
+				tmp.append('%s = \'%s\'' % (resolved_field, pattern))
 
 	#####################################################################
 
@@ -297,7 +302,7 @@ def smart_execute(client, table, patterns = None, fields = None, order = None, l
 	if order:
 		tmp = to_array(order, ',')
 	else:
-		tmp = primary_and_extra_fields
+		tmp = primary_and_additional_fields
 
 	order = ' ORDER BY ' + ', '.join([resolve_field(table, field) for field in tmp])
 
@@ -368,8 +373,8 @@ def smart_execute_parser(parser, table, include_pattern = True):
 	FIELDS = ', '.join(sorted(parameters.keys()))
 
 	parser.add_argument('-l', '--limit', help = 'limit number of results', type = int, default = None)
-	parser.add_argument('-o', '--order', help = 'order by fields (comma separated parameter, possible fields: %s)' % FIELDS, type = str, default = None, metavar = 'FIELD1,FIELD2,...')
-	parser.add_argument('-f', '--fields', help = 'display extra fields (comma separated parameter, possible fields: %s)' % FIELDS, type = str, default = None, metavar = 'FIELDS,FIELD2,...')
+	parser.add_argument('-o', '--order', help = 'order by fields (comma separated parameter, available fields: %s)' % FIELDS, type = str, default = None, metavar = 'FIELD1,FIELD2,...')
+	parser.add_argument('-f', '--fields', help = 'display additional fields (comma separated parameter, available fields: %s)' % FIELDS, type = str, default = None, metavar = 'FIELDS,FIELD2,...')
 	parser.add_argument('--show-archived', help = 'search in archived catalogues as well', action = 'store_true', default = False)
 
 	if include_pattern:
@@ -412,6 +417,6 @@ def smart_execute_parser(parser, table, include_pattern = True):
 #############################################################################
 
 def print_json(table, stream = sys.stdout):
-	stream.write(json.dumps(table) + '\n')
+	stream.write(json.dumps(table, indent = 4) + '\n')
 
 #############################################################################

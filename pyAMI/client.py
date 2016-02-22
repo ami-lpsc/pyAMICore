@@ -184,23 +184,16 @@ class Client(object):
 		# BUILD REQUEST                                             #
 		#############################################################
 
-		data = {'Converter': converter}
-
-		#############################################################
-
-		if command.startswith('UploadProxy'):
-
-			data['Proxy'] = self.config.cert_file_content
-
-		else:
-
-			data['Command'] = '%s -AMIUser="%s" -AMIPass="%s"' % (command, AMIUser, AMIPass) \
-			                                                                                 \
-				if command                                                               \
-				   and                                                                   \
-				   AMIUser                                                               \
-				   and                                                                   \
+		data = {
+			'Converter': converter,
+			'Command': '%s -AMIUser="%s" -AMIPass="%s"' % (command, AMIUser, AMIPass) \
+				                                                                  \
+				if command                                                        \
+				   and                                                            \
+				   AMIUser                                                        \
+				   and                                                            \
 				   AMIPass else command
+		}
 
 		#############################################################
 
@@ -215,42 +208,27 @@ class Client(object):
 		#############################################################
 
 		if self.verbose:
+			## SAFETY ##
+			data['Command'] = command
+			## SAFETY ##
 
-			if   'Command' in data:
+			pyAMI.utils.safeprint('URL     : %s://%s:%s%s?%s' % (
+				self.httpclient.endpoint['prot'],
+				self.httpclient.endpoint['host'],
+				self.httpclient.endpoint['port'],
+				self.httpclient.endpoint['path'],
+				urllib_parse_urlencode(data)
+			))
 
-				## SAFETY ##
-				data['Command'] = command
-				## SAFETY ##
-
-				pyAMI.utils.safeprint('URL     : %s://%s:%s%s?%s' % (
-					self.httpclient.endpoint['prot'],
-					self.httpclient.endpoint['host'],
-					self.httpclient.endpoint['port'],
-					self.httpclient.endpoint['path'],
-					urllib_parse_urlencode(data)
-				))
-
-				pyAMI.utils.safeprint('Details :')
-				pyAMI.utils.safeprint('  Session -> %s' % self.config.jsid)
-				pyAMI.utils.safeprint('  Key file -> %s' % self.config.key_file)
-				pyAMI.utils.safeprint('  Cert file -> %s' % self.config.cert_file)
-				pyAMI.utils.safeprint('  Conn. mode -> %s' % self.config.conn_mode_str)
-				pyAMI.utils.safeprint('')
-				pyAMI.utils.safeprint('  Command -> %s' % data['Command'])
-				pyAMI.utils.safeprint('  Converter -> %s' % data['Converter'])
-				pyAMI.utils.safeprint('')
-
-			elif 'Proxy' in data:
-
-				pyAMI.utils.safeprint('Details :')
-				pyAMI.utils.safeprint('  Session -> %s' % self.config.jsid)
-				pyAMI.utils.safeprint('  Key file -> %s' % self.config.key_file)
-				pyAMI.utils.safeprint('  Cert file -> %s' % self.config.cert_file)
-				pyAMI.utils.safeprint('  Conn. mode -> %s' % self.config.conn_mode_str)
-				pyAMI.utils.safeprint('')
-				pyAMI.utils.safeprint('  Proxy ->\n%s' % data['Proxy'])
-				pyAMI.utils.safeprint('  Converter -> %s' % data['Converter'])
-				pyAMI.utils.safeprint('')
+			pyAMI.utils.safeprint('Details :')
+			pyAMI.utils.safeprint('  Session -> %s' % self.config.jsid)
+			pyAMI.utils.safeprint('  Key file -> %s' % self.config.key_file)
+			pyAMI.utils.safeprint('  Cert file -> %s' % self.config.cert_file)
+			pyAMI.utils.safeprint('  Conn. mode -> %s' % self.config.conn_mode_str)
+			pyAMI.utils.safeprint('')
+			pyAMI.utils.safeprint('  Command -> %s' % data['Command'])
+			pyAMI.utils.safeprint('  Converter -> %s' % data['Converter'])
+			pyAMI.utils.safeprint('')
 
 		#############################################################
 

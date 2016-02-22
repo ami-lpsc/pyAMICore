@@ -98,13 +98,6 @@ class App(object):
 		subparser.set_defaults(func = pyAMI.modes.reset)
 
 		#############################################################
-		# UPLOAD PROXY                                              #
-		#############################################################
-
-		subparser = subparsers.add_parser('upload-proxy', help = 'upload proxy to server')
-		subparser.set_defaults(func = pyAMI.modes.upload_proxy)
-
-		#############################################################
 		# COMMAND OPTIONS                                           #
 		#############################################################
 
