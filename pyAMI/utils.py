@@ -348,29 +348,31 @@ def smart_execute_parser(parser, table, include_pattern = True):
 	# CUSTOM PARAMETERS                                                 #
 	#####################################################################
 
-	parameters = {}
+	PARAMETERS = {}
 
 	for field, descr in tables[table].items():
 		if not field.startswith('@'):
-			parameters[field.replace('_', '-')] = {
+			PARAMETERS[field] = {
 				'foreign': False,
 				'descr': [x.strip() for x in descr.split('=')],
+				'option': field.replace('_', '-'),
 			}
 
 	for TABLE in get_foreign_tables(table):
 
 		for field, descr in tables[TABLE].items():
 			if not field.startswith('@'):
-				parameters[TABLE + '.' + field.replace('_', '-')] = {
+				PARAMETERS[TABLE + '.' + field] = {
 					'foreign': True,
 					'descr': [x.strip() for x in descr.split('=')],
+					'option': TABLE + '.' + field.replace('_', '-'),
 				}
 
 	#####################################################################
 	# DEFAULT PARAMETERS                                                #
 	#####################################################################
 
-	FIELDS = ', '.join(sorted(parameters.keys()))
+	FIELDS = ', '.join(sorted(PARAMETERS))
 
 	parser.add_argument('-l', '--limit', help = 'limit number of results', type = int, default = None)
 	parser.add_argument('-o', '--order', help = 'order by fields (comma separated parameter, available fields: %s)' % FIELDS, type = str, default = None, metavar = 'FIELD1,FIELD2,...')
@@ -384,12 +386,12 @@ def smart_execute_parser(parser, table, include_pattern = True):
 	# ENTITY PARAMETERS                                                 #
 	#####################################################################
 
-	for field, data in sorted(parameters.items()):
+	for field, data in sorted(PARAMETERS.items()):
 		#############################################################
 		# OPTION NAME                                               #
 		#############################################################
 
-		OPTION = '--%s' % field
+		OPTION = '--%s' % data['option']
 
 		#############################################################
 		# DEFAULT VALUE AND HELP                                    #
