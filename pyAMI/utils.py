@@ -118,7 +118,7 @@ def _resolve_field(table, field):
 	except KeyError:
 		raise pyAMI.exception.Error('invalid field `%s`, not in [%s]' % (
 			field,
-			', '.join(['`%s`' % x for x in fields if not x.startswith('@')]),
+			', '.join(['`%s`' % x for x in resolved_fields if not x.startswith('@')]),
 		))
 
 	#####################################################################
