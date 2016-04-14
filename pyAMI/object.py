@@ -254,24 +254,26 @@ class DICTObject(AMIObject):
 
 			if not rowset_type or ('@type' in rowset and rowset['@type'] == rowset_type):
 
-				for row in rowset['row']:
-					field_dict = pyAMIDict()
+				if rowset.has_key('row'):
+					for row in rowset['row']:
+						field_dict = pyAMIDict()
 
-					for field in row['field']:
-						name = field['@name']
+						if row.has_key('field'):
+							for field in row['field']:
+								name = field['@name']
 
-						if '@table' in field:
-							table = field['@table']
+								if '@table' in field:
+									table = field['@table']
 
-							if self.entity and table and self.entity != table:
-								name = '%s.%s' % (table, name)
+									if self.entity and table and self.entity != table:
+										name = '%s.%s' % (table, name)
 
-						if '$' in field:
-							field_dict[name] = field['$']
-						else:
-							field_dict[name] = 'NULL'
+								if '$' in field:
+									field_dict[name] = field['$']
+								else:
+									field_dict[name] = 'NULL'
 
-					yield field_dict
+						yield field_dict
 
 	#####################################################################
 
