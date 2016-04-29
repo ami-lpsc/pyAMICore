@@ -34,11 +34,11 @@ def urllib_parse_urlencode(data):
 class Client(object):
 	#####################################################################
 
-	def __init__(self, endpoint, format = 'text', xslt_file = '', key_file = '', cert_file = '', ignore_proxy = False, verbose = False):
+	def __init__(self, endpoints, format = 'text', xslt_file = '', key_file = '', cert_file = '', ignore_proxy = False, verbose = False):
 		'''Create a python AMI client.
 
 		Args:
-		    :endpoint: the endpoint [ str ]
+		    :endpoints: the list of endpoints [ str|list|tuple ]
 		    :format: the default format [ str ]
 		    :xslt_file: the custom XSL transformation [ str ]
 		    :key_file: the key file for certificate authentication [ str ]
@@ -52,7 +52,7 @@ class Client(object):
 		#############################################################
 
 		self.config = pyAMI.config.Config(
-			endpoint,
+			endpoints,
 			format = format,
 			xslt_file = xslt_file,
 			key_file = key_file,
@@ -69,14 +69,6 @@ class Client(object):
 		#############################################################
 
 		self.verbose = verbose
-
-		#############################################################
-
-		try:
-			__import__('pyAMI_' + endpoint)
-
-		except ImportError:
-			pass
 
 	#####################################################################
 
@@ -150,13 +142,13 @@ class Client(object):
 			format = self.config.default_format
 
 		try:
-			converter = pyAMI.config.formats[format]['converter']
-			transform = pyAMI.config.formats[format]['transform']
+			converter = pyAMI.config.format_descrs[format]['converter']
+			transform = pyAMI.config.format_descrs[format]['transform']
 
 		except KeyError:
 			raise pyAMI.exception.Error('issnvalid format `%s`, not in [%s]' % (
 				format,
-				', '.join(['`%s`' % x for x in pyAMI.config.formats]),
+				', '.join(['`%s`' % x for x in pyAMI.config.format_descrs]),
 			))
 
 		#############################################################

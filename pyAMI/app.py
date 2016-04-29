@@ -64,10 +64,10 @@ class App(object):
 				dest = 'verbose', help = 'run in verbose mode', action = 'store_true', default = False)
 
 		parser.add_argument('-e', '--endpoint',
-				dest = 'endpoint', help = 'default endpoint', choices = [pyAMI.utils.safestring(x) for x in pyAMI.config.endpoints], default = default_endpoint)
+				dest = 'endpoint', help = 'default endpoint', choices = [pyAMI.utils.safestring(x) for x in pyAMI.config.endpoint_descrs], default = default_endpoint)
 
 		parser.add_argument('-f', '--format',
-				dest = 'format', help = 'default format', choices = [pyAMI.utils.safestring(x) for x in pyAMI.config.formats], default = default_format)
+				dest = 'format', help = 'default format', choices = [pyAMI.utils.safestring(x) for x in pyAMI.config.format_descrs], default = default_format)
 
 		parser.add_argument('-x', '--xslt',
 				dest = 'xslt_file', help = 'custom XSL transformation', default = default_xslt_file)
@@ -153,7 +153,7 @@ class App(object):
 			args = dict(self._parser.parse_args([pyAMI.utils.safe_decoded_string(sys.argv[i]) for i in range(1, len(sys.argv))])._get_kwargs())
 
 		client = pyAMI.client.Client(
-			endpoint = args['endpoint'],
+			endpoints = args['endpoint'],
 			format = args['format'],
 			xslt_file = args['xslt_file'],
 			key_file = args['key_file'],

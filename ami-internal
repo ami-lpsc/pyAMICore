@@ -22,7 +22,7 @@ import os, sys, pyAMI.modes, pyAMI.client, pyAMI.exception
 def entry_point():
 
 	try:
-		client = pyAMI.client.Client('atlas', 'text', xslt_file = os.path.abspath(os.path.dirname(os.path.realpath(__file__)) + '/custom.xslt'), verbose = False)
+		client = pyAMI.client.Client(['atlas', 'atlas-replica'], 'text', xslt_file = os.path.abspath(os.path.dirname(os.path.realpath(__file__)) + '/custom.xslt'), verbose = False)
 
 		return pyAMI.modes.console(client, {
 			'scriptName': None,

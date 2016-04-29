@@ -40,20 +40,7 @@ class HttpClient(object):
 
 	#####################################################################
 
-	def connect(self):
-		#############################################################
-		# GET ENDPOINT                                              #
-		#############################################################
-
-		try:
-			self.endpoint = pyAMI.config.endpoints[self.config.endpoint]
-
-		except KeyError:
-			raise pyAMI.exception.Error('invalid endpoint `%s`, not in [%s]' % (
-				self.config.endpoint,
-				', '.join(['`%s`' % x for x in pyAMI.config.endpoints]),
-			))
-
+	def _connect(self):
 		#############################################################
 		# HTTP CONNECTION                                           #
 		#############################################################
@@ -125,6 +112,38 @@ class HttpClient(object):
 
 		else:
 			raise pyAMI.exception.Error('invalid endpoint protocol `%s`, not in [http, https]' % self.endpoint['prot'])
+
+
+	#####################################################################
+
+	def connect(self):
+		i = 0x000000000000000000000000
+		l = len(self.config.endpoints)
+
+		while i < l:
+			#####################################################
+			# GET ENDPOINT                                      #
+			#####################################################
+
+			self.endpoint = pyAMI.config.endpoint_descrs[
+				self.config.endpoints[i]
+			]
+
+			i += 1
+
+			#####################################################
+			# CONNECT                                           #
+			#####################################################
+
+			try:
+				self._connect()
+
+				return
+
+			except Exception as e:
+
+				if i == l:
+					raise e
 
 	#####################################################################
 

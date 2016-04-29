@@ -23,7 +23,7 @@ else:
 # GLOBAL DEFINITIONS                                                        #
 #############################################################################
 
-version = '5.0.5'
+version = '5.0.6'
 
 #############################################################################
 
@@ -55,13 +55,13 @@ bug_report = 'Bug reports: ami@lpsc.in2p3.fr'
 
 #############################################################################
 
-endpoints = {
+endpoint_descrs = {
 	'local': {'prot': 'https', 'host': 'localhost', 'port': '8443', 'path': '/AMI/FrontEnd'},
 }
 
 #############################################################################
 
-formats = {
+format_descrs = {
 	'xml': {'converter': '', 'transform': ''},
 	'custom': {'converter': '', 'transform': 'custom'},
 	'dom_object': {'converter': '', 'transform': 'dom_object'},
@@ -101,7 +101,7 @@ class Config(object):
 
 	#####################################################################
 
-	def __init__(self, endpoint, format = 'text', xslt_file = '', key_file = '', cert_file = '', ignore_proxy = False):
+	def __init__(self, endpoints, format = 'text', xslt_file = '', key_file = '', cert_file = '', ignore_proxy = False):
 		super(Config, self).__init__()
 
 		#############################################################
@@ -115,7 +115,25 @@ class Config(object):
 
 		#############################################################
 
-		self.default_endpoint = endpoint
+		if not isinstance(endpoints, list) \
+		   and                             \
+		   not isinstance(endpoints, tuple):
+			endpoints = [endpoints]
+
+		#############################################################
+
+		for endpoint in endpoints:
+
+			if not endpoint in endpoint_descrs:
+
+				raise pyAMI.exception.Error('invalid endpoint `%s`, not in [%s]' % (
+					endpoint,
+					', '.join(['`%s`' % x for x in endpoint_descrs]),
+				))
+
+		#############################################################
+
+		self.default_endpoints = endpoints
 		self.default_format = format
 		self.default_xslt_file = xslt_file
 		self.default_key_file = key_file
@@ -123,7 +141,7 @@ class Config(object):
 
 		self.ignore_proxy = ignore_proxy
 
-		self.endpoint = None
+		self.endpoints = None
 		self.format = None
 		self.xslt_file = None
 		self.cert_file = None
@@ -151,7 +169,7 @@ class Config(object):
 		# SET ENDPOINT AND XSLT_FILE                                #
 		#############################################################
 
-		self.endpoint = self.default_endpoint
+		self.endpoints = self.default_endpoints
 		self.format = self.default_format
 		self.xslt_file = self.default_xslt_file
 
