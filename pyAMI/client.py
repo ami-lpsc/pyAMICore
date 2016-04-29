@@ -195,40 +195,70 @@ class Client(object):
 		# DO REQUEST                                                #
 		#############################################################
 
-		self.httpclient.connect()
+		i = 0x000000000000000000000000
+		l = len(self.config.endpoints)
 
-		#############################################################
+		while i < l:
+			#####################################################
+			# GET ENDPOINT                                      #
+			#####################################################
 
-		if self.verbose:
-			## SAFETY ##
-			data['Command'] = command
-			## SAFETY ##
+			endpoint = pyAMI.config.endpoint_descrs[
+				self.config.endpoints[i]
+			]
 
-			pyAMI.utils.safeprint('URL     : %s://%s:%s%s?%s' % (
-				self.httpclient.endpoint['prot'],
-				self.httpclient.endpoint['host'],
-				self.httpclient.endpoint['port'],
-				self.httpclient.endpoint['path'],
-				urllib_parse_urlencode(data)
-			))
+			i += 1
 
-			pyAMI.utils.safeprint('Details :')
-			pyAMI.utils.safeprint('  Session -> %s' % self.config.jsid)
-			pyAMI.utils.safeprint('  Key file -> %s' % self.config.key_file)
-			pyAMI.utils.safeprint('  Cert file -> %s' % self.config.cert_file)
-			pyAMI.utils.safeprint('  Conn. mode -> %s' % self.config.conn_mode_str)
-			pyAMI.utils.safeprint('')
-			pyAMI.utils.safeprint('  Command -> %s' % data['Command'])
-			pyAMI.utils.safeprint('  Converter -> %s' % data['Converter'])
-			pyAMI.utils.safeprint('')
+			#####################################################
+			# CONNECT                                           #
+			#####################################################
 
-		#############################################################
+			try:
+				#############################################
 
-		try:
-			result = self.httpclient.request(DATA).read().decode('utf-8', 'replace')
+				self.httpclient.connect(endpoint)
 
-		finally:
-			self.httpclient.close()
+				#############################################
+
+				if self.verbose:
+					## SAFETY ##
+					data['Command'] = command
+					## SAFETY ##
+
+					pyAMI.utils.safeprint('URL     : %s://%s:%s%s?%s' % (
+						self.httpclient.endpoint['prot'],
+						self.httpclient.endpoint['host'],
+						self.httpclient.endpoint['port'],
+						self.httpclient.endpoint['path'],
+						urllib_parse_urlencode(data)
+					))
+
+					pyAMI.utils.safeprint('Details :')
+					pyAMI.utils.safeprint('  Session -> %s' % self.config.jsid)
+					pyAMI.utils.safeprint('  Key file -> %s' % self.config.key_file)
+					pyAMI.utils.safeprint('  Cert file -> %s' % self.config.cert_file)
+					pyAMI.utils.safeprint('  Conn. mode -> %s' % self.config.conn_mode_str)
+					pyAMI.utils.safeprint('')
+					pyAMI.utils.safeprint('  Command -> %s' % data['Command'])
+					pyAMI.utils.safeprint('  Converter -> %s' % data['Converter'])
+					pyAMI.utils.safeprint('')
+
+				#############################################
+
+				try:
+					result = self.httpclient.request(DATA).read().decode('utf-8', 'replace')
+
+				finally:
+					self.httpclient.close()
+
+				#############################################
+
+				break
+
+			except Exception as e:
+
+				if i == l:
+					raise e
 
 		#############################################################
 		# FORMAT RESULT                                             #
