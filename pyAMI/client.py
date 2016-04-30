@@ -241,6 +241,8 @@ class Client(object):
 				pyAMI.utils.safeprint('')
 
 			#####################################################
+			# TALK                                              #
+			#####################################################
 
 			try:
 				result = self.httpclient.request(DATA).read().decode('utf-8', 'replace')
