@@ -8,4 +8,4 @@ sdist: clean
 	python setup.py sdist upload
 
 clean:
-	rm -fr build dist *.egg-info
+	rm -fr build dist *.egg-info pyAMI/*.pyc
