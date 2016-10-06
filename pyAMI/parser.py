@@ -21,7 +21,7 @@ PATTERN1 = re.compile(
 )
 
 PATTERN2 = re.compile(
-	'^[-]*([a-zA-Z][a-zA-Z0-9]*)\\s*=\\s*\"((?:\\\"|[^\"])*)\"'
+	'^[-]*([a-zA-Z][a-zA-Z0-9]*)\\s*=\\s*\"((?:\\\\\"|[^\"])*)\"'
 )
 
 PATTERN3 = re.compile(
