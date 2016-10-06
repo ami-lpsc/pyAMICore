@@ -52,7 +52,7 @@ class Client(object):
 		#############################################################
 
 		self.config = pyAMI.config.Config(
-			endpoints,
+			endpoints = endpoints,
 			format = format,
 			xslt_file = xslt_file,
 			key_file = key_file,

@@ -12,7 +12,96 @@ from __future__ import (division, print_function, unicode_literals)
 #
 #############################################################################
 
-import pyAMI.utils, pyAMI.exception, pyAMI.my_tokenizer
+import re, pyAMI.exception
+
+#############################################################################
+
+PATTERN1 = re.compile(
+	'^\\s*([a-zA-Z][a-zA-Z0-9]*)'
+)
+
+PATTERN2 = re.compile(
+	'^[-]*([a-zA-Z][a-zA-Z0-9]*)\\s*=\\s*\"((?:\\\"|[^\"])*)\"'
+)
+
+PATTERN3 = re.compile(
+	'^[-]*([a-zA-Z][a-zA-Z0-9]*)\\s*=\\s*([^\\s]+)'
+)
+
+PATTERN4 = re.compile(
+	'^[-]*([a-zA-Z][a-zA-Z0-9]*)'
+)
+
+#############################################################################
+
+def parse(args):
+
+	if not isinstance(args, basestring):
+		s = ''
+
+		for arg in args:
+			s += _shell_barrier(arg) + ' '
+
+	else:
+		s = args.__str__()
+
+	i = 0x0000
+	l = len(s)
+
+	#####################################################################
+	# PARSE COMMAND                                                     #
+	#####################################################################
+
+	m = PATTERN1.search(s)
+
+	if not m is None:
+		result = m.group(1)
+		i += len(result)
+	else:
+		raise pyAMI.exception.Error('command syntax error, missing command name')
+
+	#####################################################################
+	# PARSE ARGUMENTS                                                   #
+	#####################################################################
+
+	args = {}
+
+	while i < l:
+		#############################################################
+		# EAT SPACE                                                 #
+		#############################################################
+
+		if s[i].isspace():
+			i += 1
+			continue
+
+		#############################################################
+		# EAT ARGUMENT                                              #
+		#############################################################
+
+		m = PATTERN2.search(s[i: ])
+		if m is None:
+
+			m = PATTERN3.search(s[i: ])
+			if m is None:
+
+				m = PATTERN4.search(s[i: ])
+				if m is None:
+
+					raise pyAMI.exception.Error('command syntax error, invalid argument syntax')
+
+		#############################################################
+
+		if len(m.groups()) < 2:
+			result += ' -%s' % (m.group(1))
+		else:
+			result += ' -%s="%s"' % (m.group(1), m.group(2))
+
+		i += len(m.group(0))
+
+	#####################################################################
+
+	return result
 
 #############################################################################
 
@@ -39,131 +128,5 @@ def _shell_barrier(arg):
 					arg = '%s="%s"' % (left_part, right_part)
 
 	return arg
-
-#############################################################################
-
-DASH = 0
-EQUAL = 1
-STRING = 2
-ERR = 9
-
-CMD = 0
-ARG = 1
-VAL = 2
-NIL = 9
-
-#############################################################################
-
-TRANSITIONS = [
-	#	DASH	EQUAL	STRING  #
-	[	ERR,	ERR,	  1	],
-	[	  2,	ERR,	  3	],
-	[	  2,	ERR,	  3	],
-	[	  2,	  4,	  3	],
-	[	ERR,	ERR,	  1	],
-]
-
-OPERATIONS = [
-	#	DASH	EQUAL	STRING  #
-	[	NIL,	NIL,	CMD	],
-	[	NIL,	NIL,	ARG	],
-	[	NIL,	NIL,	ARG	],
-	[	NIL,	NIL,	ARG	],
-	[	NIL,	NIL,	VAL	],
-]
-
-FINAL = [1, 3]
-
-#############################################################################
-
-def parse(args):
-	#####################################################################
-	# TOKENIZE COMMAND                                                  #
-	#####################################################################
-
-	tokens = []
-
-	for arg in pyAMI.utils.to_array(args):
-
-		TOKENS, _ = pyAMI.my_tokenizer.tokenize(
-			_shell_barrier(arg),
-			spaces = [' ', '\t', '\n'],
-			kwords = ['-', '/', '='],
-			quotes = ['\'', '\"'],
-			escape = '\\'
-		)
-
-		tokens.extend(TOKENS)
-
-	#####################################################################
-	# GENERATE COMMAND                                                  #
-	#####################################################################
-
-	if not tokens:
-		return ''
-
-	#####################################################################
-
-	idx = 0
-
-	cur_state = 0
-	new_state = 0
-
-	result = ''
-
-	for token in tokens:
-		#############################################################
-		# LEXER                                                     #
-		#############################################################
-
-		if   token == '-'\
-		     or          \
-		     token == '/':
-			idx = DASH
-
-		elif token == '=':
-			idx = EQUAL
-
-		else:
-			idx = STRING
-
-			if token[0] == '\''\
-			   or              \
-			   token[0] == '\"':
-				token = token[+1: -1]
-
-		#############################################################
-		# PARSER                                                    #
-		#############################################################
-
-		new_state = TRANSITIONS[cur_state][idx]
-		operation = OPERATIONS[cur_state][idx]
-
-		if new_state == ERR:
-			raise pyAMI.exception.Error('syntax error, line `1`, unexpected token `%s`' % token)
-
-		if   operation == CMD:
-
-			if token.startswith('AMI'):
-				result += '%s' % token[3: ]
-			else:
-				result += '%s' % token[0: ]
-
-		elif operation == ARG:
-			result += ' -%s' % token
-
-		elif operation == VAL:
-			result += '="%s"' % token
-
-		cur_state = new_state
-
-	#####################################################################
-
-	if not cur_state in FINAL:
-		raise pyAMI.exception.Error('syntax error, line `1`, truncated command')
-
-	#####################################################################
-
-	return result
 
 #############################################################################

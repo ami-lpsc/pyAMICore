@@ -11,3 +11,11 @@ from __future__ import (division, print_function, unicode_literals)
 # Version : 5.X.X (2014)
 #
 #############################################################################
+
+try:
+	import pyAMI_atlas
+
+except ImportError:
+	pass
+
+#############################################################################
