@@ -23,7 +23,7 @@ else:
 # GLOBAL DEFINITIONS                                                        #
 #############################################################################
 
-version = '5.0.6'
+version = '5.0.7'
 
 #############################################################################
 
@@ -235,7 +235,7 @@ class Config(object):
 			#####################################################
 
 			fp = open(config_file, 'w')
-			fp.write('; Please do not share this file publicly.\n')
+			fp.write('; Please do not share this file.\n')
 			self._ini.write(fp)
 			fp.close()
 
