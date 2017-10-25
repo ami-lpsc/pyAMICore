@@ -12,7 +12,7 @@ from __future__ import (division, print_function, unicode_literals)
 #
 #############################################################################
 
-import sys, base64, getpass, pyAMI.utils, pyAMI.config, pyAMI.object, pyAMI.parser, pyAMI.exception, pyAMI.transform, pyAMI.httpclient
+import sys, base64, getpass, pyAMI.utils, pyAMI.config, pyAMI.object, pyAMI.exception, pyAMI.transform, pyAMI.httpclient
 
 if sys.version_info[0] == 3:
 	import urllib.parse as urllib_parse
@@ -64,7 +64,7 @@ class Client(object):
 
 		#############################################################
 
-		self.httpclient = pyAMI.httpclient.HttpClient(self.config)
+		self.httpClient = pyAMI.httpclient.HttpClient(self.config)
 
 		#############################################################
 
@@ -152,12 +152,6 @@ class Client(object):
 			))
 
 		#############################################################
-		# BUILD COMMAND                                             #
-		#############################################################
-
-		command = pyAMI.parser.parse(command)
-
-		#############################################################
 		# GET AMIUser AND AMIPass                                   #
 		#############################################################
 
@@ -174,6 +168,11 @@ class Client(object):
 
 		#############################################################
 		# BUILD REQUEST                                             #
+		#############################################################
+
+		if not isinstance(command, basestring):
+			command = ' '.join(command)
+
 		#############################################################
 
 		data = {
@@ -213,7 +212,7 @@ class Client(object):
 			# CONNECT                                           #
 			#####################################################
 
-			self.httpclient.connect(endpoint)
+			self.httpClient.connect(endpoint)
 
 			#####################################################
 
@@ -223,10 +222,10 @@ class Client(object):
 				## SAFETY ##
 
 				pyAMI.utils.safeprint('URL     : %s://%s:%s%s?%s' % (
-					self.httpclient.endpoint['prot'],
-					self.httpclient.endpoint['host'],
-					self.httpclient.endpoint['port'],
-					self.httpclient.endpoint['path'],
+					self.httpClient.endpoint['prot'],
+					self.httpClient.endpoint['host'],
+					self.httpClient.endpoint['port'],
+					self.httpClient.endpoint['path'],
 					urllib_parse_urlencode(data)
 				))
 
@@ -245,7 +244,7 @@ class Client(object):
 			#####################################################
 
 			try:
-				result = self.httpclient.request(DATA).read().decode('utf-8', 'replace')
+				result = self.httpClient.request(DATA).read().decode('utf-8', 'replace')
 
 				break
 
@@ -255,7 +254,7 @@ class Client(object):
 					raise e
 
 			finally:
-				self.httpclient.close()
+				self.httpClient.close()
 
 		#############################################################
 		# FORMAT RESULT                                             #

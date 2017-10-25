@@ -12,7 +12,7 @@ from __future__ import (division, print_function, unicode_literals)
 #
 #############################################################################
 
-import sys, code, pyAMI.utils, pyAMI.object, pyAMI.parser, pyAMI.exception
+import sys, code, pyAMI.utils, pyAMI.object, pyAMI.exception
 
 #############################################################################
 
@@ -45,24 +45,53 @@ def reset(client, args):
 
 def command(client, args):
 	#####################################################################
-	# TURN THE SHELL BARRIER ON                                         #
+	# SHELL BARRIER                                                     #
 	#####################################################################
 
-	pyAMI.parser.shell_barrier = True
+	cmd_args = args['amiCmdName']
 
 	#####################################################################
-	# GENERATE COMMAND                                                  #
-	#####################################################################
 
-	cmd_args = []
-	cmd_args.extend(args['amiCmdName'])
-	cmd_args.extend(args['amiCmdArgs'])
+	Q = False
+
+	for arg in args['amiCmdArgs']:
+		#############################################################
+
+		if Q:
+			Q = False
+			arg = '=' + arg
+
+		#############################################################
+
+		idx = arg.find('=')
+
+		if idx != -1:
+			left_part = arg[: idx + 0]
+			right_part = arg[idx + 1: ]
+
+			if not right_part:
+				Q = True
+				cmd_args.append(left_part.strip())
+			else:
+				LEFT_PART = left_part.strip()
+				RIGHT_PART = right_part.strip()
+
+				if   not RIGHT_PART.startswith('\'') or not RIGHT_PART.endswith('\''):
+					cmd_args.append('%s="%s"' % (LEFT_PART, right_part.replace('"', '\\"')))
+
+				elif not RIGHT_PART.startswith('\"') or not RIGHT_PART.endswith('\"'):
+					cmd_args.append('%s="%s"' % (LEFT_PART, right_part.replace('"', '\\"')))
+
+				else:
+					cmd_args.append(arg.strip())
+		else:
+			cmd_args.append(arg.strip())
 
 	#####################################################################
 	# EXECUTE COMMAND                                                   #
 	#####################################################################
 
-	r = client.execute(cmd_args)
+	r = client.execute(' '.join(cmd_args))
 
 	if isinstance(r, pyAMI.object.AMIObject):
 		pyAMI.utils.safeprint(r.formated_data)
