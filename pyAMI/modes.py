@@ -52,13 +52,13 @@ def command(client, args):
 
 	#####################################################################
 
-	Q = False
+	insertEq = False
 
 	for arg in args['amiCmdArgs']:
 		#############################################################
 
-		if Q:
-			Q = False
+		if insertEq:
+			insertEq = False
 			arg = '=' + arg
 
 		#############################################################
@@ -70,7 +70,7 @@ def command(client, args):
 			right_part = arg[idx + 1: ]
 
 			if not right_part:
-				Q = True
+				insertEq = True
 				cmd_args.append(left_part.strip())
 			else:
 				LEFT_PART = left_part.strip()
