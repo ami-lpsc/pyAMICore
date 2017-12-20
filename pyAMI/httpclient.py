@@ -149,7 +149,12 @@ class HttpClient(object):
 		# GET RESPONSE AND COOKIE                                   #
 		#############################################################
 
-		result = self.connection.getresponse()
+		try:
+			result = self.connection.getresponse(buffering = True)
+		except TypeError:
+			result = self.connection.getresponse(                )
+
+		#############################################################
 
 		self.config.jsid = result.getheader('set-cookie')
 
